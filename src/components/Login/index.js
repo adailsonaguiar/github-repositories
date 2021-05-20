@@ -25,15 +25,13 @@ export default function Login() {
 
       const requestData = {
         code: newUrl[1],
-        client_id: state.client_id,
-        client_secret: state.client_secret,
       };
 
-      // const proxy_url = state.proxy_url;
+      const proxy_url = state.proxy_url;
       console.log(requestData);
 
       // Use code parameter and other parameters to make POST request to proxy_server
-      fetch("https://github.com/login/oauth/access_token", {
+      fetch(proxy_url, {
         method: "POST",
         body: JSON.stringify(requestData),
       })
