@@ -3,7 +3,7 @@ import { Redirect } from "react-router-dom";
 import GithubIcon from "mdi-react/GithubIcon";
 import { AuthContext } from "../../context";
 
-import { Wrapper } from "./styles";
+import * as S from "./styles";
 
 export default function Login() {
   const { state, changeState } = useContext(AuthContext);
@@ -51,16 +51,16 @@ export default function Login() {
     }
   }, [state, data]);
 
-  if (isLogged) {
-    return <Redirect to="/" />;
-  }
+  // if (isLogged) {
+  //   return <Redirect to="/" />;
+  // }
 
   return (
-    <Wrapper>
+    <S.Wrapper>
       <section className="container">
-        <div>
-          <h1>Welcome</h1>
-          <span>Super amazing app</span>
+        <S.Form>
+          <h1>Welcome to Github Repositories</h1>
+          <span>Search for users and yours repositories</span>
           <span>{data.errorMessage}</span>
           <div className="login-container">
             {data.isLoading ? (
@@ -69,11 +69,7 @@ export default function Login() {
               </div>
             ) : (
               <>
-                {
-                  // Link to request GitHub access
-                }
-                <a
-                  className="login-link"
+                <S.LoginLink
                   href={`https://github.com/login/oauth/authorize?scope=user&client_id=${client_id}&redirect_uri=${redirect_uri}`}
                   onClick={() => {
                     setData({ ...data, errorMessage: "" });
@@ -81,13 +77,12 @@ export default function Login() {
                 >
                   <GithubIcon />
                   <span>Login with GitHub</span>
-                </a>
+                </S.LoginLink>
               </>
             )}
           </div>
-          <button onClick={() => console.log(state)}>teste</button>
-        </div>
+        </S.Form>
       </section>
-    </Wrapper>
+    </S.Wrapper>
   );
 }
