@@ -1,9 +1,6 @@
-import { useCallback, useContext, useEffect, useState } from "react";
-import debounce from "lodash.debounce";
+import { useEffect, useState } from "react";
 
 import { apiPost } from "../../api/request";
-import { AuthContext } from "../../context";
-import InputSearch from "../../components/InputSearch";
 import ListRepositories from "../../components/ListRepositories";
 
 import * as S from "./styles";
@@ -13,8 +10,9 @@ import Heading from "../../components/Heading";
 export default function Repositories() {
   const authorization = sessionStorage.getItem("authorization");
   let { login } = useParams();
-  const [userQuery, setUserQuery] = useState(login);
   const [repositories, setRepositories] = useState([]);
+  const typeTabs = { REPOSITORIES: "REPOSITORIES", STARRED: "STARRED" };
+  const [tabActive, setTabActive] = useState(typeTabs.REPOSITORIES);
 
   async function getRepositories() {
     const response = await apiPost({
@@ -27,32 +25,66 @@ export default function Repositories() {
     if (response?.length) setRepositories(response);
   }
 
-  const delayedQuery = useCallback(debounce(getRepositories, 500), [userQuery]);
+  async function getRepositoriesMostVisited() {
+    const response = await apiPost({
+      endpoint: `users/${login}/starred`,
+      headers: {
+        Authorization: `token ${authorization}`,
+      },
+    });
+
+    if (response?.length) setRepositories(response);
+  }
 
   useEffect(() => {
-    if (userQuery) delayedQuery();
+    if (login) {
+      if (tabActive === typeTabs.REPOSITORIES) getRepositories();
+      if (tabActive === typeTabs.STARRED) getRepositoriesMostVisited();
+    }
   }, [login]);
 
-  // useEffect(() => {
-  //   if (userQuery) delayedQuery();
+  function getRepositoriesSwitch(type) {
+    setTabActive(type);
+    switch (type) {
+      case typeTabs.REPOSITORIES:
+        getRepositories();
+        break;
 
-  //   return delayedQuery.cancel;
-  // }, [userQuery, delayedQuery]);
+      case typeTabs.STARRED:
+        getRepositoriesMostVisited();
+        break;
 
-  const onChange = (e) => {
-    setUserQuery(e.target.value);
-  };
+      default:
+        getRepositories();
+        break;
+    }
+  }
 
   return (
     <S.Section>
       <Heading>
         Repositories of <strong>{login}</strong>
       </Heading>
-      {/* <InputSearch
-        placeholder="Search for a repository"
-        onChange={onChange}
-        value={userQuery}
-      /> */}
+      <S.Tab>
+        <S.TabItem
+          active={tabActive === typeTabs.REPOSITORIES}
+          onClick={() => {
+            if (tabActive !== typeTabs.REPOSITORIES)
+              getRepositoriesSwitch(typeTabs.REPOSITORIES);
+          }}
+        >
+          Repositories
+        </S.TabItem>
+        <S.TabItem
+          active={tabActive === typeTabs.STARRED}
+          onClick={() => {
+            if (tabActive !== typeTabs.STARRED)
+              getRepositoriesSwitch(typeTabs.STARRED);
+          }}
+        >
+          Starred
+        </S.TabItem>
+      </S.Tab>
       <ListRepositories repositories={repositories} />
     </S.Section>
   );
