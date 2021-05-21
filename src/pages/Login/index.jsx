@@ -11,13 +11,12 @@ export default function Login() {
   const [data, setData] = useState({ errorMessage: "", isLoading: false });
 
   const { client_id, redirect_uri } = state;
+  const isLogged = sessionStorage.getItem("isLoggedIn");
 
   useEffect(() => {
-    // After requesting Github access, Github redirects back to your app with a code parameter
     const url = window.location.href;
     const hasCode = url.includes("?code=");
 
-    // If Github API returns the code parameter
     if (hasCode) {
       const newUrl = url.split("?code=");
       window.history.pushState({}, null, newUrl[0]);
@@ -30,18 +29,20 @@ export default function Login() {
       const proxy_url = state.proxy_url;
       console.log(requestData);
 
-      // Use code parameter and other parameters to make POST request to proxy_server
       fetch(proxy_url, {
         method: "POST",
         body: JSON.stringify(requestData),
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log(data);
           changeState({ user: data, isLoggedIn: true });
+          setData({ ...data, isLoading: false });
+          sessionStorage.setItem("authorization", data.authorization);
+          sessionStorage.setItem("isLoggedIn", true);
         })
         .catch((error) => {
           console.error(error);
+          setData({ ...data, isLoading: false });
           setData({
             isLoading: false,
             errorMessage: "Sorry! Login failed",
@@ -50,7 +51,7 @@ export default function Login() {
     }
   }, [state, data]);
 
-  if (state.isLoggedIn) {
+  if (isLogged) {
     return <Redirect to="/" />;
   }
 
@@ -84,6 +85,7 @@ export default function Login() {
               </>
             )}
           </div>
+          <button onClick={() => console.log(state)}>teste</button>
         </div>
       </section>
     </Wrapper>

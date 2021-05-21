@@ -4,15 +4,12 @@ const FormData = require("form-data");
 const fetch = require("node-fetch");
 const { client_id, redirect_uri, client_secret } = require("./config");
 
-const config = require("./config");
-
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.json({ type: "text/*" }));
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// Enabled Access-Control-Allow-Origin", "*" in the header so as to by-pass the CORS error.
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   next();
@@ -26,8 +23,8 @@ app.post("/authenticate", (req, res) => {
   data.append("client_secret", client_secret);
   data.append("code", code);
   data.append("redirect_uri", redirect_uri);
+  const user = {};
 
-  // Request to exchange code for an access token
   fetch(`https://github.com/login/oauth/access_token`, {
     method: "POST",
     body: data,
@@ -35,18 +32,17 @@ app.post("/authenticate", (req, res) => {
     .then((response) => response.text())
     .then((paramsString) => {
       let params = new URLSearchParams(paramsString);
-      const access_token = params.get("access_token");
+      user.authorization = params.get("access_token");
 
-      // Request to return data of a user that has been authenticated
       return fetch(`https://api.github.com/user`, {
         headers: {
-          Authorization: `token ${access_token}`,
+          Authorization: `token ${user.authorization}`,
         },
       });
     })
     .then((response) => response.json())
     .then((response) => {
-      return res.status(200).json(response);
+      return res.status(200).json({ ...response, ...user });
     })
     .catch((error) => {
       return res.status(400).json(error);
