@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Redirect } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import GithubIcon from "mdi-react/GithubIcon";
 import { AuthContext } from "../../context";
 
-import { Wrapper } from "./styles";
+import * as S from "./styles";
 
 export default function Login() {
+  const history = useHistory();
   const { state, changeState } = useContext(AuthContext);
 
   const [data, setData] = useState({ errorMessage: "", isLoading: false });
@@ -39,6 +40,7 @@ export default function Login() {
           setData({ ...data, isLoading: false });
           sessionStorage.setItem("authorization", data.authorization);
           sessionStorage.setItem("isLoggedIn", true);
+          history.push("/");
         })
         .catch((error) => {
           console.error(error);
@@ -51,16 +53,16 @@ export default function Login() {
     }
   }, [state, data]);
 
-  if (isLogged) {
-    return <Redirect to="/" />;
-  }
+  useEffect(() => {
+    if (isLogged) history.push("/");
+  }, []);
 
   return (
-    <Wrapper>
+    <S.Wrapper>
       <section className="container">
-        <div>
-          <h1>Welcome</h1>
-          <span>Super amazing app</span>
+        <S.Form>
+          <h1>Welcome to Github Repositories</h1>
+          <span>Search for users and yours repositories</span>
           <span>{data.errorMessage}</span>
           <div className="login-container">
             {data.isLoading ? (
@@ -69,11 +71,7 @@ export default function Login() {
               </div>
             ) : (
               <>
-                {
-                  // Link to request GitHub access
-                }
-                <a
-                  className="login-link"
+                <S.LoginLink
                   href={`https://github.com/login/oauth/authorize?scope=user&client_id=${client_id}&redirect_uri=${redirect_uri}`}
                   onClick={() => {
                     setData({ ...data, errorMessage: "" });
@@ -81,13 +79,12 @@ export default function Login() {
                 >
                   <GithubIcon />
                   <span>Login with GitHub</span>
-                </a>
+                </S.LoginLink>
               </>
             )}
           </div>
-          <button onClick={() => console.log(state)}>teste</button>
-        </div>
+        </S.Form>
       </section>
-    </Wrapper>
+    </S.Wrapper>
   );
 }

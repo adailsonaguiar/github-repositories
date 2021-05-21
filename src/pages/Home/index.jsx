@@ -28,7 +28,7 @@ export default function Home() {
   const delayedQuery = useCallback(debounce(getRepositories, 500), [userQuery]);
 
   useEffect(() => {
-    delayedQuery();
+    if (userQuery) delayedQuery();
 
     return delayedQuery.cancel;
   }, [userQuery, delayedQuery]);

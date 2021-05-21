@@ -14,7 +14,12 @@ export default function MenuBar() {
       </S.UserInformation>
       <S.Pages>
         <S.PageItem active={window.location.pathname === "/"}>
-          <Link to="/">Repositories</Link>
+          <Link to="/">Home</Link>
+        </S.PageItem>
+        <S.PageItem
+          active={window.location.pathname === `/user/${state?.user?.login}`}
+        >
+          <Link to={`/user/${state?.user?.login}`}>My Repositories</Link>
         </S.PageItem>
       </S.Pages>
     </S.Wrapper>
