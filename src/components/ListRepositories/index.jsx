@@ -6,7 +6,7 @@ export default function ListRepositories({ repositories }) {
   return (
     <S.List>
       {repositories.map((item, index) => (
-        <S.RepoWrapper key={index}>
+        <S.RepoWrapper key={index} data-testid="repository-list">
           <S.Col>
             <S.Title>{item.name}</S.Title>
             <S.Description>{item.description}</S.Description>

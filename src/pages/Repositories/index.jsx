@@ -1,63 +1,41 @@
 import { useEffect, useState } from "react";
 
-import { apiPost } from "../../api/request";
 import ListRepositories from "../../components/ListRepositories";
 
 import * as S from "./styles";
 import { useParams } from "react-router";
 import Heading from "../../components/Heading";
+import {
+  getRepositories,
+  getRepositoriesMostVisited,
+} from "../../api/repositories";
 
 export default function Repositories() {
-  const authorization = sessionStorage.getItem("authorization");
   let { login } = useParams();
   const [repositories, setRepositories] = useState([]);
   const typeTabs = { REPOSITORIES: "REPOSITORIES", STARRED: "STARRED" };
   const [tabActive, setTabActive] = useState(typeTabs.REPOSITORIES);
 
-  async function getRepositories() {
-    const response = await apiPost({
-      endpoint: `users/${login}/repos`,
-      headers: {
-        Authorization: `token ${authorization}`,
-      },
-    });
-
-    if (response?.length) setRepositories(response);
-  }
-
-  async function getRepositoriesMostVisited() {
-    const response = await apiPost({
-      endpoint: `users/${login}/starred`,
-      headers: {
-        Authorization: `token ${authorization}`,
-      },
-    });
-
-    if (response?.length) setRepositories(response);
+  async function requestRepositories(typeTab) {
+    if (typeTab === typeTabs.REPOSITORIES) {
+      const repositoriesResponse = await getRepositories(login);
+      if (repositoriesResponse) setRepositories(repositoriesResponse);
+    }
+    if (typeTab === typeTabs.STARRED) {
+      const repositoriesResponse = await getRepositoriesMostVisited(login);
+      if (repositoriesResponse) setRepositories(repositoriesResponse);
+    }
   }
 
   useEffect(() => {
     if (login) {
-      if (tabActive === typeTabs.REPOSITORIES) getRepositories();
-      if (tabActive === typeTabs.STARRED) getRepositoriesMostVisited();
+      requestRepositories(tabActive);
     }
   }, [login]);
 
   function getRepositoriesSwitch(type) {
     setTabActive(type);
-    switch (type) {
-      case typeTabs.REPOSITORIES:
-        getRepositories();
-        break;
-
-      case typeTabs.STARRED:
-        getRepositoriesMostVisited();
-        break;
-
-      default:
-        getRepositories();
-        break;
-    }
+    requestRepositories(type);
   }
 
   return (

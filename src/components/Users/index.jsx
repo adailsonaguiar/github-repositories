@@ -6,8 +6,8 @@ import * as S from "./styles";
 export default function Users({ user }) {
   return (
     <Link style={{ textDecoration: "none" }} to={`/user/${user.login}`}>
-      <S.List>
-        <S.Avatar src={user.avatar_url} />
+      <S.List data-testid="user-list">
+        <S.Avatar src={user.avatar_url} alt={user.login} />
         <S.RepoWrapper>
           <S.Col>
             <S.Title>{user.login}</S.Title>
