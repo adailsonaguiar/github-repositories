@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Redirect } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import GithubIcon from "mdi-react/GithubIcon";
 import { AuthContext } from "../../context";
 
 import * as S from "./styles";
 
 export default function Login() {
+  const history = useHistory();
   const { state, changeState } = useContext(AuthContext);
 
   const [data, setData] = useState({ errorMessage: "", isLoading: false });
@@ -39,6 +40,7 @@ export default function Login() {
           setData({ ...data, isLoading: false });
           sessionStorage.setItem("authorization", data.authorization);
           sessionStorage.setItem("isLoggedIn", true);
+          history.push("/");
         })
         .catch((error) => {
           console.error(error);
@@ -51,9 +53,9 @@ export default function Login() {
     }
   }, [state, data]);
 
-  if (isLogged) {
-    return <Redirect to="/" />;
-  }
+  useEffect(() => {
+    if (isLogged) history.push("/");
+  }, []);
 
   return (
     <S.Wrapper>

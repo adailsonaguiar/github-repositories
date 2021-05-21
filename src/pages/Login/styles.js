@@ -16,7 +16,8 @@ export const Form = styled.div`
   align-items: center;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
   transition: 0.3s;
-  width: 25%;
+  width: 100%;
+  max-width: 43rem;
   height: 45%;
   background-color: #fff;
   > h1 {
