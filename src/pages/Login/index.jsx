@@ -51,9 +51,9 @@ export default function Login() {
     }
   }, [state, data]);
 
-  // if (isLogged) {
-  //   return <Redirect to="/" />;
-  // }
+  if (isLogged) {
+    return <Redirect to="/" />;
+  }
 
   return (
     <S.Wrapper>

@@ -8,6 +8,7 @@ import ListRepositories from "../../components/ListRepositories";
 
 import * as S from "./styles";
 import { useParams } from "react-router";
+import Heading from "../../components/Heading";
 
 export default function Repositories() {
   const authorization = sessionStorage.getItem("authorization");
@@ -17,7 +18,7 @@ export default function Repositories() {
 
   async function getRepositories() {
     const response = await apiPost({
-      endpoint: `users/${userQuery}/repos`,
+      endpoint: `users/${login}/repos`,
       headers: {
         Authorization: `token ${authorization}`,
       },
@@ -30,13 +31,13 @@ export default function Repositories() {
 
   useEffect(() => {
     if (userQuery) delayedQuery();
-  }, []);
+  }, [login]);
 
-  useEffect(() => {
-    if (userQuery) delayedQuery();
+  // useEffect(() => {
+  //   if (userQuery) delayedQuery();
 
-    return delayedQuery.cancel;
-  }, [userQuery, delayedQuery]);
+  //   return delayedQuery.cancel;
+  // }, [userQuery, delayedQuery]);
 
   const onChange = (e) => {
     setUserQuery(e.target.value);
@@ -44,11 +45,14 @@ export default function Repositories() {
 
   return (
     <S.Section>
-      <InputSearch
+      <Heading>
+        Repositories of <strong>{login}</strong>
+      </Heading>
+      {/* <InputSearch
         placeholder="Search for a repository"
         onChange={onChange}
         value={userQuery}
-      />
+      /> */}
       <ListRepositories repositories={repositories} />
     </S.Section>
   );

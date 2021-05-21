@@ -14,7 +14,7 @@ export default {
       large: "1.8rem",
       xlarge: "2.0rem",
       xxlarge: "2.8rem",
-      huge: "5rem",
+      huge: "3.4rem",
     },
   },
   colors: {
