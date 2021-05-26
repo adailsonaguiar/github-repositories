@@ -1,8 +1,7 @@
 import { apiPost } from "./request";
 
-const authorization = sessionStorage.getItem("authorization");
-
 export async function getRepositories(username) {
+  const authorization = sessionStorage.getItem("authorization");
   const response = await apiPost({
     endpoint: `users/${username}/repos`,
     headers: {
@@ -14,6 +13,8 @@ export async function getRepositories(username) {
 }
 
 export async function getRepositoriesMostVisited(login) {
+  const authorization = sessionStorage.getItem("authorization");
+
   const response = await apiPost({
     endpoint: `users/${login}/starred`,
     headers: {
